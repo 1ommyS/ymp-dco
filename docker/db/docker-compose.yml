@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: dco-postgres
+    environment:
+      POSTGRES_DB: dco_db
+      POSTGRES_USER: dco_user
+      POSTGRES_PASSWORD: dco_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dco-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U dco_user -d dco_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  goose-migrate:
+    image: ghcr.io/kukymbr/goose-docker:3.24.3
+    container_name: dco-goose-migrate
+    environment:
+      - GOOSE_DRIVER=postgres
+      - GOOSE_DBSTRING=host=postgres port=5432 user=dco_user password=dco_password dbname=dco_db sslmode=disable
+    volumes:
+      - ../../migrations:/migrations
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - dco-network
+
+volumes:
+  postgres_data:
