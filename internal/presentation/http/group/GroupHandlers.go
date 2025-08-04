@@ -3,7 +3,7 @@ package group
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/itpark/market/dco/internal/config/db"
-	groupRepository "github.com/itpark/market/dco/internal/infrastructure/repository"
+	groupRepository "github.com/itpark/market/dco/internal/infrastructure/repository/group"
 	customErrors "github.com/itpark/market/dco/internal/presentation/http/common"
 	"github.com/itpark/market/dco/internal/presentation/http/group/dto"
 	"github.com/itpark/market/dco/internal/service"
@@ -14,7 +14,7 @@ type Handler struct {
 	Service *service.GroupService
 }
 
-func Init(connection *db.DbConnection) *Handler {
+func InitGroupHandler(connection *db.DbConnection) *Handler {
 	repository := groupRepository.NewGroupRepository(connection)
 	newGroupService := service.NewGroupService(repository)
 
@@ -30,11 +30,21 @@ func (g *Handler) CreateGroup(ctx *gin.Context) {
 		return
 	}
 
-	g.Service.CreateGroup(ctx, groupDto)
+	err := g.Service.CreateGroup(ctx, groupDto)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, customErrors.CreateError("Failed to create group", err))
+	}
 
 	ctx.Status(http.StatusCreated)
 }
 
 func (g *Handler) FindAll(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, g.Service.GetAll(ctx))
+	groups, err := g.Service.GetAll(ctx)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, customErrors.CreateError("Failed to get groups", err))
+	}
+
+	ctx.JSON(http.StatusOK, groups)
 }

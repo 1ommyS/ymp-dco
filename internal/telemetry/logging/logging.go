@@ -83,8 +83,6 @@ func Warn(args ...interface{}) {
 
 func Error(args ...interface{}) {
 	Logger.Error(args...)
-	_ = Logger.Sync()
-	os.Exit(1)
 }
 
 func Errorf(template string, args ...interface{}) {

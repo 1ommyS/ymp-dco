@@ -1,9 +1,8 @@
-package router
+package group
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/itpark/market/dco/internal/config/db"
-	groupHandlers "github.com/itpark/market/dco/internal/presentation/http/group"
 )
 
 type GroupRouter struct {
@@ -20,7 +19,7 @@ func (groupRouter *GroupRouter) RegisterRoutes(routerGroup *gin.RouterGroup) {
 	group := routerGroup.Group("groups")
 
 	{
-		groupHandler := groupHandlers.Init(groupRouter.DbConnection)
+		groupHandler := InitGroupHandler(groupRouter.DbConnection)
 		group.POST("/", groupHandler.CreateGroup)
 		group.GET("/", groupHandler.FindAll)
 	}

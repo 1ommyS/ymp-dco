@@ -1,6 +1,6 @@
 package common
 
-type ErrorDto struct {
+type InternalErrorDto struct {
 	Message string      `json:"message"`
 	Error   interface{} `json:"error"`
 }
@@ -8,9 +8,16 @@ type ErrorDto struct {
 func CreateError(
 	message string,
 	error error,
-) *ErrorDto {
-	return &ErrorDto{
+) *InternalErrorDto {
+	if error != nil {
+		return &InternalErrorDto{
+			Message: message,
+			Error:   error.Error(),
+		}
+	}
+
+	return &InternalErrorDto{
 		Message: message,
-		Error:   error.Error(),
+		Error:   error,
 	}
 }
