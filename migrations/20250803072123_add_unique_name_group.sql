@@ -3,8 +3,9 @@
 SELECT 'up SQL query';
 -- +goose StatementEnd
 
-alter table dco.segments
-    add column response jsonb;
+alter table dco.groups
+    add constraint groups_title_unique
+        unique (title);
 
 -- +goose Down
 -- +goose StatementBegin

@@ -3,7 +3,8 @@ package http
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/itpark/market/dco/internal/config/db"
-	"github.com/itpark/market/dco/internal/presentation/http/group/router"
+	"github.com/itpark/market/dco/internal/presentation/http/group"
+	"github.com/itpark/market/dco/internal/presentation/http/segments"
 )
 
 func RegisterRoutes(engine *gin.Engine, db *db.DbConnection) *gin.Engine {
@@ -13,9 +14,11 @@ func RegisterRoutes(engine *gin.Engine, db *db.DbConnection) *gin.Engine {
 		api.GET("/health", healthCheck)
 	}
 
-	groupRouter := router.NewGroupRouter(db)
+	groupRouter := group.NewGroupRouter(db)
+	segmentRouter := segments.NewSegmentRouter(db)
 
 	groupRouter.RegisterRoutes(api)
+	segmentRouter.RegisterRoutes(api)
 
 	return engine
 }
